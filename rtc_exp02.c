@@ -32,9 +32,9 @@
 /*******************************************************************************
  * MSP432 RTC_C - Calendar Mode
  *
- * ÃèÊö£º
- * ¸Ã³ÌĞòÍ¨¹ıÃ¿·ÖÖÓ´¥·¢Ò»´ÎÖĞ¶ÏÀ´ÑİÊ¾RTCÄ£Ê½¡£
- * ÈÕÆÚÔÚ³ÌĞò¿ªÊ¼Ê±½øĞĞ³õÊ¼»¯£¬²¢ÇÒ»¹ÉèÖÃÌØ¶¨Ê±¼äµÄ¸½¼Ó¾¯±¨ÒÔÑİÊ¾RTC_CÄ£¿éµÄ¸÷ÖÖ¾¯±¨/ÊÂ¼şÄ£Ê½¡£
+ * æè¿°ï¼š
+ * è¯¥ç¨‹åºé€šè¿‡æ¯åˆ†é’Ÿè§¦å‘ä¸€æ¬¡ä¸­æ–­æ¥æ¼”ç¤ºRTCæ¨¡å¼ã€‚
+ * æ—¥æœŸåœ¨ç¨‹åºå¼€å§‹æ—¶è¿›è¡Œåˆå§‹åŒ–ï¼Œå¹¶ä¸”è¿˜è®¾ç½®ç‰¹å®šæ—¶é—´çš„é™„åŠ è­¦æŠ¥ä»¥æ¼”ç¤ºRTC_Cæ¨¡å—çš„å„ç§è­¦æŠ¥/äº‹ä»¶æ¨¡å¼ã€‚
  *
  *                MSP432P401
  *             ------------------
@@ -65,15 +65,15 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-//¶¨Òå±äÁ¿
+//å®šä¹‰å˜é‡
  static volatile RTC_C_Calendar newTime;
 
 
 
- //Ôö¼Ó±äÁ¿
+ //å¢åŠ å˜é‡
  unsigned char flag_disp;
 
- //Ê±¼äÊÇ1955Äê,11ÔÂ12ÈÕ,ÖÜÁù, 10:03:00 PM
+ //æ—¶é—´æ˜¯1955å¹´,11æœˆ12æ—¥,å‘¨å…­, 10:03:00 PM
 RTC_C_Calendar currentTime =
  {
          0x00,
@@ -157,35 +157,35 @@ int main(void)
 
     unsigned char rtc_index;
 
-    //¹Ø±Õ¿´ÃÅ¹·
+    //å…³é—­çœ‹é—¨ç‹—
     WDT_A_holdTimer();
 
-    //ÅäÖÃÍâÉè¹¦ÄÜÒı½Å,Á¬½ÓµÍÆµ¾§Õñ
+    //é…ç½®å¤–è®¾åŠŸèƒ½å¼•è„š,è¿æ¥ä½é¢‘æ™¶æŒ¯
     GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_PJ,
             GPIO_PIN0 | GPIO_PIN1, GPIO_PRIMARY_MODULE_FUNCTION);
-    //ÅäÖÃGPIOÎªÊä³ö
+    //é…ç½®GPIOä¸ºè¾“å‡º
     GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
 
-    //ÉèÖÃÍâ²¿µÄÊ±ÖÓÆµÂÊ,·Ç±ØĞë.  Èç¹ûÓÃ»§Ê¹ÓÃÁËgetMCLK/getACLKµÈAPI, Ôò±ØĞëÏÈµ÷ÓÃ¸Ãº¯Êı
+    //è®¾ç½®å¤–éƒ¨çš„æ—¶é’Ÿé¢‘ç‡,éå¿…é¡».  å¦‚æœç”¨æˆ·ä½¿ç”¨äº†getMCLK/getACLKç­‰API, åˆ™å¿…é¡»å…ˆè°ƒç”¨è¯¥å‡½æ•°
     CS_setExternalClockSourceFrequency(32000,48000000);
 
-    //Æô¶¯LFXT, ·ÇÓĞÔ´¾§ÕñÄ£Ê½
+    //å¯åŠ¨LFXT, éæœ‰æºæ™¶æŒ¯æ¨¡å¼
     CS_startLFXT(CS_LFXT_DRIVE3);
 
     GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P1,
             GPIO_PIN2 | GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
 
-    //Ê¹ÄÜFPU,ÓÃÓÚDCOÆµÂÊ¼ÆËã
+    //ä½¿èƒ½FPU,ç”¨äºDCOé¢‘ç‡è®¡ç®—
     FPU_enableModule();
 
-    //ÉèÖÃDCOÎª·Ç±ê×¼ÆµÂÊ12MHz
+    //è®¾ç½®DCOä¸ºéæ ‡å‡†é¢‘ç‡12MHz
     CS_setDCOFrequency(12000000);
 
     CS_initClockSignal(CS_SMCLK, CS_DCOCLK_SELECT, CS_CLOCK_DIVIDER_1);
 
-    //ÅäÖÃUART
+    //é…ç½®UART
     UART_initModule(EUSCI_A0_BASE, &uartConfig);
-    //Ê¹ÄÜUART
+    //ä½¿èƒ½UART
     UART_enableModule(EUSCI_A0_BASE);
 
     /* Enabling interrupts */
@@ -195,10 +195,10 @@ int main(void)
 //    Interrupt_enableMaster();
 
     uart_send_string("Init RTC.\r\n");
-    //³õÊ¼»¯RTC£¬current time
+    //åˆå§‹åŒ–RTCï¼Œcurrent time
     RTC_C_initCalendar(&currentTime, RTC_C_FORMAT_BCD);
 
-    //²âÊÔRTCµÄ³õÊ¼»¯¶ÁÊı;
+    //æµ‹è¯•RTCçš„åˆå§‹åŒ–è¯»æ•°;
 #if 1
     uart_send_string("RTC Register Write and Read TEST.\r\n");
     rtc_index = 0;
@@ -215,13 +215,13 @@ int main(void)
     }
 #endif
 
-    //ÉèÖÃÈÕÀú¸æ¾¯22:04 ¼´10:04pm
+    //è®¾ç½®æ—¥å†å‘Šè­¦22:04 å³10:04pm
    // RTC_C_setCalendarAlarm(0x04, 0x22, RTC_C_ALARMCONDITION_OFF,RTC_C_ALARMCONDITION_OFF);
 
-    //ÉèÖÃÊÂ¼ş£¬Ã¿·ÖÖÓÖĞ¶Ï1´Î
+    //è®¾ç½®äº‹ä»¶ï¼Œæ¯åˆ†é’Ÿä¸­æ–­1æ¬¡
    // RTC_C_setCalendarEvent(RTC_C_CALENDAREVENT_MINUTECHANGE);
 
-    //Ê¹ÄÜRTC Ready StatusÖĞ¶Ï£¬ÓÃÀ´Ö¸Ê¾RTCÈÕÀú¼Ä´æÆ÷¿É¶Á. Í¬Ñù,Ê¹ÄÜÈÕÀú¸æ¾¯ÖĞ¶Ï,ºÍÊÂ¼şÖĞ¶Ï
+    //ä½¿èƒ½RTC Ready Statusä¸­æ–­ï¼Œç”¨æ¥æŒ‡ç¤ºRTCæ—¥å†å¯„å­˜å™¨å¯è¯». åŒæ ·,ä½¿èƒ½æ—¥å†å‘Šè­¦ä¸­æ–­,å’Œäº‹ä»¶ä¸­æ–­
    // RTC_C_clearInterruptFlag(RTC_C_CLOCK_READ_READY_INTERRUPT | RTC_C_TIME_EVENT_INTERRUPT| RTC_C_CLOCK_ALARM_INTERRUPT);
    // RTC_C_enableInterrupt(RTC_C_CLOCK_READ_READY_INTERRUPT | RTC_C_TIME_EVENT_INTERRUPT| RTC_C_CLOCK_ALARM_INTERRUPT);
     RTC_C_clearInterruptFlag(RTC_C_CLOCK_READ_READY_INTERRUPT);
@@ -230,10 +230,10 @@ int main(void)
     newTime = RTC_C_getCalendarTime();
     Display_Time(newTime);
 
-    //¿ªÆôRTCÊ±ÖÓ
+    //å¼€å¯RTCæ—¶é’Ÿ
     RTC_C_startClock();
 
-    //Ê¹ÄÜÖĞ¶Ï,½øÈëĞİÃßÄ£Ê½
+    //ä½¿èƒ½ä¸­æ–­,è¿›å…¥ä¼‘çœ æ¨¡å¼
     Interrupt_enableInterrupt(INT_RTC_C);
 //    Interrupt_enableSleepOnIsrExit();
     Interrupt_enableMaster();
@@ -260,7 +260,7 @@ int main(void)
 
 }
 
-//ÖĞ¶Ï·şÎñ³ÌĞò
+//ä¸­æ–­æœåŠ¡ç¨‹åº
 void RTC_C_IRQHandler(void)
 {
     uint32_t status;
@@ -276,14 +276,14 @@ void RTC_C_IRQHandler(void)
 
     if (status & RTC_C_TIME_EVENT_INTERRUPT)
     {
-        //´Ë´¦ÉèÖÃ¶Ïµã, Ã¿·ÖÖÓÖĞ¶ÏÒ»´Î
+        //æ­¤å¤„è®¾ç½®æ–­ç‚¹, æ¯åˆ†é’Ÿä¸­æ–­ä¸€æ¬¡
         __no_operation();
 //        newTime = RTC_C_getCalendarTime();
     }
 
     if (status & RTC_C_CLOCK_ALARM_INTERRUPT)
     {
-        //10:04pm ÖĞ¶Ï
+        //10:04pm ä¸­æ–­
         __no_operation();
     }
 
