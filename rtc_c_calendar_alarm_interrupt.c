@@ -1,40 +1,12 @@
-/* --COPYRIGHT--,BSD
- * Copyright (c) 2017, Texas Instruments Incorporated
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * *  Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * *  Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * *  Neither the name of Texas Instruments Incorporated nor the names of
- *    its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * --/COPYRIGHT--*/
 /*******************************************************************************
- * MSP432 RTC_C - Calendar Mode
+ * MSP432 RTCå®æ—¶é’Ÿä¾‹ç¨‹
  *
- * ÃèÊö£º
- * ¸Ã³ÌĞòÍ¨¹ıÃ¿·ÖÖÓ´¥·¢Ò»´ÎÖĞ¶ÏÀ´ÑİÊ¾RTCÄ£Ê½¡£
- * ÈÕÆÚÔÚ³ÌĞò¿ªÊ¼Ê±½øĞĞ³õÊ¼»¯£¬²¢ÇÒ»¹ÉèÖÃÌØ¶¨Ê±¼äµÄÄÖÁåÒÔÑİÊ¾RTC_CÄ£¿éµÄ¸÷ÖÖÄÖÁå/ÊÂ¼şÄ£Ê½¡£
+ * æè¿°ï¼š
+ * ä¾‹ç¨‹æ¼”ç¤ºäº†RTCæ—¶é’Ÿçš„åŸºæœ¬åŠŸèƒ½ã€‚
+ * åœ¨ç¨‹åºå¼€å§‹æ—¶åˆå§‹åŒ–æ—¥æœŸï¼Œå¹¶è®¾ç½®äº†é—¹é’Ÿå’Œäº‹ä»¶ã€‚å¼€å¯äº†3ä¸ªä¸­æ–­:
+ * (1)å…è®¸è¯»æ•°ä¸­æ–­å³æ¯ç§’ä¸­æ–­, å°†LEDç¯çš„è¾“å‡ºå–å;
+ * (2)äº‹ä»¶ä¸­æ–­,æ¯åˆ†é’Ÿ,å¯ä»¥ä¸­æ–­ä¸­è®¾ç½®æ–­ç‚¹,æŸ¥çœ‹å½“å‰çš„æ—¶é—´;
+ * (3)é—¹é’Ÿ,å‘ç”Ÿ1æ¬¡;
  *
  *                MSP432P401
  *             ------------------
@@ -47,14 +19,15 @@
  *            |                  |         |
  *            |     PJ.1 LFXOUT  |---------
  *
+ * by: xie_sx@126.com
  ******************************************************************************/
 /* DriverLib Includes */
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 
-//¶¨Òå±äÁ¿
+//å®šä¹‰å˜é‡
 static volatile RTC_C_Calendar newTime;
 
-//Ê±¼äÊÇ1955Äê,11ÔÂ12ÈÕ,ÖÜÁù, 10:03:00 PM
+//æ—¶é—´æ˜¯1955å¹´,11æœˆ12æ—¥,å‘¨å…­, 10:03:00 PM
 const RTC_C_Calendar currentTime =
 {
      0x00,
@@ -68,82 +41,74 @@ const RTC_C_Calendar currentTime =
 
 int main(void)
 {
-    //¹Ø±Õ¿´ÃÅ¹·
-    MAP_WDT_A_holdTimer();
+    //å…³é—­çœ‹é—¨ç‹—
+    WDT_A_holdTimer();
 
-    //ÅäÖÃÍâÉè¹¦ÄÜÒı½Å,Á¬½ÓµÍÆµ¾§Õñ
-    MAP_GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_PJ,
-            GPIO_PIN0 | GPIO_PIN1, GPIO_PRIMARY_MODULE_FUNCTION);
-    //ÅäÖÃGPIOÎªÊä³ö
-    MAP_GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
+    //é…ç½®å¤–è®¾åŠŸèƒ½å¼•è„š,è¿æ¥ä½é¢‘æ™¶æŒ¯
+   GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_PJ,GPIO_PIN0 | GPIO_PIN1, GPIO_PRIMARY_MODULE_FUNCTION);
+    //é…ç½®GPIOä¸ºè¾“å‡º
+    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
 
-    //ÉèÖÃÍâ²¿µÄÊ±ÖÓÆµÂÊ,·Ç±ØĞë.  Èç¹ûÓÃ»§Ê¹ÓÃÁËgetMCLK/getACLKµÈAPI, Ôò±ØĞëÏÈµ÷ÓÃ¸Ãº¯Êı
+    //è®¾ç½®å¤–éƒ¨çš„æ—¶é’Ÿé¢‘ç‡,éå¿…é¡».  å¦‚æœç”¨æˆ·ä½¿ç”¨äº†getMCLK/getACLKç­‰API, åˆ™å¿…é¡»å…ˆè°ƒç”¨è¯¥å‡½æ•°
     CS_setExternalClockSourceFrequency(32000,48000000);
 
-    //Æô¶¯LFXT, ·ÇÓĞÔ´¾§ÕñÄ£Ê½
+    //å¯åŠ¨LFXT, éæœ‰æºæ™¶æŒ¯æ¨¡å¼
     CS_startLFXT(CS_LFXT_DRIVE3);
 
-    //³õÊ¼»¯RTC£¬current time
-    MAP_RTC_C_initCalendar(&currentTime, RTC_C_FORMAT_BCD);
-//    RTC_C_initCalendar(&currentTime, RTC_C_FORMAT_BCD);
-    //ÉèÖÃÈÕÀúÄÖÖÓ22:04 ¼´10:04pm
-    MAP_RTC_C_setCalendarAlarm(0x04, 0x22, RTC_C_ALARMCONDITION_OFF,RTC_C_ALARMCONDITION_OFF);
+    //åˆå§‹åŒ–RTCï¼Œcurrent time
+    RTC_C_initCalendar(&currentTime, RTC_C_FORMAT_BCD);
 
-    //ÉèÖÃÊÂ¼ş£¬Ã¿·ÖÖÓÖĞ¶Ï1´Î
-    MAP_RTC_C_setCalendarEvent(RTC_C_CALENDAREVENT_MINUTECHANGE);
+    //è®¾ç½®æ—¥å†é—¹é’Ÿ22:04 å³10:04pm
+    RTC_C_setCalendarAlarm(0x04, 0x22, RTC_C_ALARMCONDITION_OFF,RTC_C_ALARMCONDITION_OFF);
 
-    //Ê¹ÄÜRTC Ready StatusÖĞ¶Ï£¬ÓÃÀ´Ö¸Ê¾RTCÈÕÀú¼Ä´æÆ÷¿É¶Á. Í¬Ñù,Ê¹ÄÜÈÕÀúÄÖÖÓÖĞ¶Ï,ºÍÊÂ¼şÖĞ¶Ï
-    MAP_RTC_C_clearInterruptFlag(
-            RTC_C_CLOCK_READ_READY_INTERRUPT | RTC_C_TIME_EVENT_INTERRUPT
-                    | RTC_C_CLOCK_ALARM_INTERRUPT);
-    MAP_RTC_C_enableInterrupt(
-            RTC_C_CLOCK_READ_READY_INTERRUPT | RTC_C_TIME_EVENT_INTERRUPT
-                    | RTC_C_CLOCK_ALARM_INTERRUPT);
+    //è®¾ç½®äº‹ä»¶ï¼Œæ¯åˆ†é’Ÿä¸­æ–­1æ¬¡
+    RTC_C_setCalendarEvent(RTC_C_CALENDAREVENT_MINUTECHANGE);
 
+    //ä½¿èƒ½RTC Ready Statusä¸­æ–­ï¼Œç”¨æ¥æŒ‡ç¤ºRTCæ—¥å†å¯„å­˜å™¨å¯è¯». åŒæ ·,ä½¿èƒ½æ—¥å†é—¹é’Ÿä¸­æ–­,å’Œäº‹ä»¶ä¸­æ–­
+    RTC_C_clearInterruptFlag(RTC_C_CLOCK_READ_READY_INTERRUPT | RTC_C_TIME_EVENT_INTERRUPT | RTC_C_CLOCK_ALARM_INTERRUPT);
+    RTC_C_enableInterrupt(RTC_C_CLOCK_READ_READY_INTERRUPT | RTC_C_TIME_EVENT_INTERRUPT| RTC_C_CLOCK_ALARM_INTERRUPT);
 
 //    newTime = RTC_C_getCalendarTime();
-    //¿ªÆôRTCÊ±ÖÓ
-    MAP_RTC_C_startClock();
+    //å¼€å¯RTCæ—¶é’Ÿ
+    RTC_C_startClock();
 
-    //Ê¹ÄÜÖĞ¶Ï,½øÈëĞİÃßÄ£Ê½
-    MAP_Interrupt_enableInterrupt(INT_RTC_C);
-    MAP_Interrupt_enableSleepOnIsrExit();
-    MAP_Interrupt_enableMaster();
+    //ä½¿èƒ½ä¸­æ–­,è¿›å…¥ä¼‘çœ æ¨¡å¼
+    Interrupt_enableInterrupt(INT_RTC_C);
+    Interrupt_enableSleepOnIsrExit();
+    Interrupt_enableMaster();
 
     while(1)
     {
-        MAP_PCM_gotoLPM0();
+        PCM_gotoLPM0();
 //        __no_operation();
     }
 
 }
 
-//ÖĞ¶Ï·şÎñ³ÌĞò
+//ä¸­æ–­æœåŠ¡ç¨‹åº
 void RTC_C_IRQHandler(void)
 {
     uint32_t status;
 
-    status = MAP_RTC_C_getEnabledInterruptStatus();
-    MAP_RTC_C_clearInterruptFlag(status);
+    status = RTC_C_getEnabledInterruptStatus();
+    RTC_C_clearInterruptFlag(status);
 
     if (status & RTC_C_CLOCK_READ_READY_INTERRUPT)
     {
-        MAP_GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
+        GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
     }
 
     if (status & RTC_C_TIME_EVENT_INTERRUPT)
     {
-        //´Ë´¦ÉèÖÃ¶Ïµã, Ã¿·ÖÖÓÖĞ¶ÏÒ»´Î
+        //æ­¤å¤„è®¾ç½®æ–­ç‚¹, æ¯åˆ†é’Ÿä¸­æ–­ä¸€æ¬¡
+        newTime =RTC_C_getCalendarTime();
         __no_operation();
-//        newTime = MAP_RTC_C_getCalendarTime();
     }
 
     if (status & RTC_C_CLOCK_ALARM_INTERRUPT)
     {
-        //10:04pm ÖĞ¶Ï
+        //10:04pm ä¸­æ–­
         __no_operation();
     }
 
 }
-
-
